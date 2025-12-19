@@ -1,2 +1,4 @@
 .trae/
 TRAE.md
+# Added by goreleaser init:
+dist/
