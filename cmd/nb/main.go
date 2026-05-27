@@ -6,10 +6,25 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"runtime/debug"
 	"strings"
 )
 
 var version = "dev"
+
+func init() {
+	if version != "dev" {
+		return
+	}
+	info, ok := debug.ReadBuildInfo()
+	if !ok {
+		return
+	}
+	v := info.Main.Version
+	if v != "" && v != "(devel)" {
+		version = v
+	}
+}
 
 // 注释格式映射
 var commentFormats = map[string]string{
