@@ -4,5 +4,5 @@ TRAE.md
 dist/
 
 # 编译产物
-nb
-nb.exe
+/nb
+/nb.exe

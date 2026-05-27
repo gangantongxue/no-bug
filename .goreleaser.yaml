@@ -29,6 +29,8 @@ builds:
       - 7
     main: ./cmd/nb/main.go
     binary: nb
+    ldflags:
+      - -s -w -X main.version={{.Version}}
 
 archives:
   - formats: [tar.gz]

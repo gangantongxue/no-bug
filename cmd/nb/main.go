@@ -9,6 +9,8 @@ import (
 	"strings"
 )
 
+var version = "dev"
+
 // 注释格式映射
 var commentFormats = map[string]string{
 	// 单行注释语言
@@ -72,22 +74,38 @@ const buddha = `
 `
 
 func main() {
+	showVersion := flag.Bool("v", false, "显示版本号")
+	dryRun := flag.Bool("d", false, "预览模式，只打印不写入文件")
+	flag.Usage = func() {
+		fmt.Fprintf(os.Stderr, "nb - 佛祖保佑，no bug！\n\n")
+		fmt.Fprintf(os.Stderr, "Usage: nb [options] <file_path>...\n\n")
+		fmt.Fprintf(os.Stderr, "Options:\n")
+		flag.PrintDefaults()
+	}
 	flag.Parse()
+
+	if *showVersion {
+		fmt.Printf("nb version %s\n", version)
+		return
+	}
+
 	if flag.NArg() < 1 {
-		fmt.Println("Usage: nb <file_path>...")
-		os.Exit(1)
+		flag.Usage()
+		os.Exit(2)
 	}
 
 	for _, filePath := range flag.Args() {
-		if err := addBuddhaComment(filePath); err != nil {
-			fmt.Printf("Error processing %s: %v\n", filePath, err)
+		if err := addBuddhaComment(filePath, *dryRun); err != nil {
+			fmt.Fprintf(os.Stderr, "Error processing %s: %v\n", filePath, err)
 			continue
 		}
-		fmt.Printf("Successfully added Buddha comment to %s\n", filePath)
+		if !*dryRun {
+			fmt.Printf("Successfully added Buddha comment to %s\n", filePath)
+		}
 	}
 }
 
-func addBuddhaComment(filePath string) error {
+func addBuddhaComment(filePath string, dryRun bool) error {
 	// 读取文件内容
 	content, err := os.ReadFile(filePath)
 	if err != nil {
@@ -146,6 +164,12 @@ func addBuddhaComment(filePath string) error {
 		}
 	} else {
 		newContent = comment.String() + "\n\n" + rawContent
+	}
+
+	// 预览模式
+	if dryRun {
+		fmt.Print(newContent)
+		return nil
 	}
 
 	// 写入文件
