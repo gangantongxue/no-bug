@@ -132,8 +132,21 @@ func addBuddhaComment(filePath string) error {
 		}
 	}
 
-	// 合并内容
-	newContent := comment.String() + "\n\n" + string(content)
+	// 合并内容（处理 shebang）
+	rawContent := string(content)
+	var newContent string
+	if strings.HasPrefix(rawContent, "#!") {
+		idx := strings.Index(rawContent, "\n")
+		if idx != -1 {
+			shebangLine := rawContent[:idx]
+			rest := rawContent[idx+1:]
+			newContent = shebangLine + "\n\n" + comment.String() + "\n\n" + strings.TrimLeft(rest, "\n")
+		} else {
+			newContent = comment.String() + "\n\n" + rawContent
+		}
+	} else {
+		newContent = comment.String() + "\n\n" + rawContent
+	}
 
 	// 写入文件
 	return os.WriteFile(filePath, []byte(newContent), 0644)

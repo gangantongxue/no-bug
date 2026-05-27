@@ -2,3 +2,7 @@
 TRAE.md
 # Added by goreleaser init:
 dist/
+
+# 编译产物
+nb
+nb.exe
